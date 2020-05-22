@@ -1,0 +1,41 @@
+<html>
+<head>
+  <script src="sign.js"></script>
+</head>
+<body>
+  <h1>Hello! Sign (log opened on console)</h1>
+  <ul>
+    <li><a onclick="Sign.mark('msg',msgA,document.getElementById('a-content'),true)">mark Sign "msg" to a content</a></li>
+    <li><a onclick="Sign.mark('msg',msgB,document.getElementById('b-content'))">mark Sign "msg" to b content</a></li>
+    <li><a onclick="Sign.mark('msg',msgC)">mark Sign "msg" to global</a></li>
+    <li><a onclick="Sign.trigger('msg',{data:'how are you!'},document.getElementById('a-content'))">trigger "msg" to a-content: data=how are you!</a></li>
+    <li><a onclick="Sign.trigger('msg',{data:'I`m fine.'},document.getElementById('b-content'))">trigger "msg" to b-content: data=I`m fine.</a></li>
+    <li><a onclick="Sign.trigger('msg',{data:'global trigger this.'})">trigger "msg" to global: data=global trigger this.</a></li>
+    <li><a onclick="Sign.trigger('msg',{data:'foooooooooobar!'}, true)">trigger "msg" to all: data=foooooooooobar!</a></li>
+    <li><a onclick="Sign.remove('msg', document.getElementById('b-content'))">remove Sign "msg" on b content</a></li>
+    <li><a onclick="Sign.remove('msg', true)">remove Sign "msg" on all content</a></li>
+  </ul>
+  <br /><br /><br />
+  <p id="a-content">
+    a content here
+  </p>
+  <br /><br /><br />
+  <p id="b-content">
+    b content here
+  </p>
+
+  <script>
+    Sign.DEBUG = true // open debug show log
+    function msgA(e) {
+      document.getElementById("a-content").innerHTML = e.data
+    }
+    function msgB(e) {
+      document.getElementById("b-content").innerHTML = e.data
+    }
+    function msgC(e) {
+      alert(e.data);
+    }
+  </script>
+</body>
+
+</html>
