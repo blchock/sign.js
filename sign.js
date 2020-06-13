@@ -8,6 +8,7 @@
  */
 var Sign = {}
 Sign.lib = {}
+Sign.cb = {}
 Sign.DEBUG = false
 
 /**
@@ -40,6 +41,39 @@ Sign.getDom = function (id) {
 }
 
 /**
+ * 跨页面存储对象
+ * @key 键
+ * @value 值(不传则为删除)
+ */
+Sign.set = function (key, value) {
+    if (value === undefined) localStorage.removeItem(key);
+    else localStorage.setItem(key, JSON.stringify(value));
+    if (Sign.DEBUG) console.log("#Sign set store:" + key + "   data:" + value);
+}
+
+/**
+ * 跨页面获取对象
+ * @key 键
+ */
+Sign.get = function (key) {
+    if (localStorage.getItem(key)) {
+        var value = localStorage.getItem(key);
+        if (Sign.DEBUG) console.log("#Sign get store:" + key + "   data:" + value);
+        return JSON.parse(value);
+    }
+}
+
+/**
+ * 删除存储对象
+ * @keyword 关键字
+ */
+Sign.del = function (keyword) {
+    if (keyword) {
+        Object.keys(localStorage).forEach(item => item.indexOf(keyword) != -1 ? localStorage.removeItem(item) : '');
+    }
+}
+
+/**
  * 添加标记：定义事件
  * @name 事件名
  * @func 事件回调函数（含一个参数e代表事件本身，事件附带的参数都直接放在e下，比如参数title：e.title）
@@ -52,8 +86,16 @@ Sign.mark = function (name, func, dom, onPop) {
     var id = Sign.getDomId(target)
     Sign.lib[id] = Sign.lib[id] || {}
     if (Sign.lib[id][name]) return false;
-    Sign.lib[id][name] = { f: func, t: onPop }
-    target.addEventListener(name, func, onPop);
+    Sign.cb[id] = Sign.cb[id] || {}
+    Sign.cb[id][name] = func;
+    Sign.lib[id][name] = { t: !!onPop }
+    if (id === 0) {
+        var signs = Sign.get('signs') || {};
+        signs[name] = Sign.lib[id][name];
+        Sign.set('signs', signs);
+        Sign.set('sign-' + name, Sign.cb[id][name].toString());
+    }
+    target.addEventListener(name, Sign.cb[id][name], onPop);
     if (Sign.DEBUG) console.log("#Sign Mark a sign name:" + name + "   on node:" + id + "   on bubbling trigger:" + !onPop);
     return true
 }
@@ -65,6 +107,15 @@ Sign.mark = function (name, func, dom, onPop) {
  * @return 返回事件回调函数返回的内容，触发所有节点时会返回带 节点id和ret返回内容 的数组
  */
 Sign.trigger = function (name, params, dom) {
+    var signs = Sign.get('signs') || {};
+    Sign.cb[0] = Sign.cb[0] || {};
+    Sign.lib[0] = Sign.lib[0] || {};
+    if (signs[name] && !Sign.lib[0][name]) {
+        var scb = Sign.get('sign-' + name);
+        Sign.cb[0][name] = eval('(' + scb + ')');
+        Sign.lib[0][name] = signs[name];
+        document.addEventListener(name, Sign.cb[0][name], Sign.lib[0][name].t);
+    }
     var e = new Event(name);
     for (const key in params) {
         if (params.hasOwnProperty(key)) {
@@ -100,6 +151,20 @@ Sign.trigger = function (name, params, dom) {
  * @return 是否删除成功（删除失败表示该节点下没有该事件）
  */
 Sign.remove = function (name, dom) {
+    var target = dom || document
+    if (dom === true || Sign.getDomId(target) === 0) {
+        if(name) {
+            if (Sign.get('signs') && Sign.get('signs')[name]) {
+                var ss = Sign.get('signs');
+                ss[name] = undefined;
+                Sign.set('signs', ss);
+                Sign.set('sign-' + name);
+            }
+        } else {
+            Sign.set('signs');
+            Sign.del('sign-');
+        }
+    }
     if (dom === true) {
         for (const id in Sign.lib) {
             if (Sign.lib.hasOwnProperty(id)) {
@@ -107,17 +172,18 @@ Sign.remove = function (name, dom) {
                     Sign.getDom(id).removeEventListener(name, Sign.lib[id][name].f, Sign.lib[id][name].t);
                 }
                 Sign.lib[id][name] = undefined
+                Sign.cb[id][name] = undefined
             }
         }
         if (Sign.DEBUG) console.log("#Sign remove all node signs with sign name:" + name);
         return true
     }
-    var target = dom || document
     var id = Sign.getDomId(target)
     if (Sign.lib[id]) {
         if (name) {
             target.removeEventListener(name, Sign.lib[id][name].f, Sign.lib[id][name].t);
             Sign.lib[id][name] = undefined;
+            Sign.cb[id][name] = undefined;
             if (Sign.DEBUG) console.log("#Sign remove a sign:" + name + "    id:" + id);
             return true
         } else {
@@ -127,6 +193,7 @@ Sign.remove = function (name, dom) {
                     target.removeEventListener(key, e.f, e.t);
                 }
                 Sign.lib[id] = {};
+                Sign.cb[id] = {};
             }
             if (Sign.DEBUG) console.log("#Sign remove all signs, node id:" + id);
             return true

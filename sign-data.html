@@ -1,0 +1,39 @@
+<html>
+
+<head>
+  <script src="sign.min.js"></script>
+</head>
+
+<body>
+  <h1>Hello! Sign Data (log opened on console)</h1>
+  <ul>
+    <li><a onclick="Sign.trigger('msg',{data:'global trigger this.'})">trigger "msg" to global: data=global trigger  this.</a></li>
+    <li><a onclick="Sign.trigger('msgAno',{data:'msgAno!'}, true)">trigger "msgAno" to all: data=msgAno!</a></li>
+    <li><a onclick="Sign.set('Bill')">Remove Bill</a></li>
+    <li><a onclick="Sign.remove('msg', true)">remove Sign "msg" on all content</a></li>
+    <li><a onclick="Sign.remove('msgAno')">remove Sign "msgAno" on global.</a></li>
+    <li><a onclick="Sign.remove()">remove all Sign.</a></li>
+  </ul>
+  <p id="a-content">
+    here is registed Global Signs.(from document)
+  </p>
+  <br /><br /><br />
+  <p id="b-content">
+    Bill is not fond.
+  </p>
+
+  <b onclick="window.history.go(-1);">
+    [ back home ]
+  </b>
+
+  <script>
+    Sign.DEBUG = true // open debug show log
+    document.getElementById('a-content').innerHTML = "Signs: " + JSON.stringify(Sign.get('signs'));
+    var bill = Sign.get('Bill');
+    if (bill) {
+      document.getElementById('b-content').innerHTML = bill.say + ". My name is " + bill.name + " and I`m " + bill.age + " years old.";
+    }
+  </script>
+</body>
+
+</html>

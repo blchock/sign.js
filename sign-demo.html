@@ -7,6 +7,7 @@
   <ul>
     <li><a onclick="Sign.mark('msg',msgA,document.getElementById('a-content'),true)">mark Sign "msg" to a content</a></li>
     <li><a onclick="Sign.mark('msg',msgB,document.getElementById('b-content'))">mark Sign "msg" to b content</a></li>
+    <li><a onclick="Sign.mark('msgAno',e=>alert('Anonymous: ' + e.data))">mark Sign "msgAno" with anonymous function to global</a></li>
     <li><a onclick="Sign.mark('msg',msgC)">mark Sign "msg" to global</a></li>
     <li><a onclick="Sign.trigger('msg',{data:'how are you!'},document.getElementById('a-content'))">trigger "msg" to a-content: data=how are you!</a></li>
     <li><a onclick="Sign.trigger('msg',{data:'I`m fine.'},document.getElementById('b-content'))">trigger "msg" to b-content: data=I`m fine.</a></li>
@@ -14,6 +15,7 @@
     <li><a onclick="Sign.trigger('msg',{data:'foooooooooobar!'}, true)">trigger "msg" to all: data=foooooooooobar!</a></li>
     <li><a onclick="Sign.remove('msg', document.getElementById('b-content'))">remove Sign "msg" on b content</a></li>
     <li><a onclick="Sign.remove('msg', true)">remove Sign "msg" on all content</a></li>
+    <li><a onclick="Sign.set('Bill', {name:'Bill',age:27,say:'Hello! World'})">set a person Bill to store</a></li>
   </ul>
   <br /><br /><br />
   <p id="a-content">
@@ -23,6 +25,10 @@
   <p id="b-content">
     b content here
   </p>
+
+  <b onclick="window.location.href = 'sign-data.html'">
+    [ test data ]
+  </b>
 
   <script>
     Sign.DEBUG = true // open debug show log
