@@ -6,9 +6,11 @@
  * trigger 触发标记
  * remove 删除标记
  */
+var Sign = {}
+Sign.lib = {}
+Sign.cb = {}
+Sign.DEBUG = false
 
-
-var Sign = { lib: { 0: {} }, cb: { 0: {} } }
 /**
  * 生成guid
  */
@@ -26,6 +28,7 @@ Sign.getDomId = function (dom) {
     if (dom === document) return 0; // document不设置id返回0
     if (dom.id) return dom.id;
     dom.id = Sign.guid();
+    if (Sign.DEBUG) console.log("#Sign general a guid for dom:", dom.id);
     return dom.id;
 }
 
@@ -45,6 +48,7 @@ Sign.getDom = function (id) {
 Sign.set = function (key, value) {
     if (value === undefined) localStorage.removeItem(key);
     else localStorage.setItem(key, JSON.stringify(value));
+    if (Sign.DEBUG) console.log("#Sign set store:" + key + "   data:" + value);
 }
 
 /**
@@ -54,6 +58,7 @@ Sign.set = function (key, value) {
 Sign.get = function (key) {
     if (localStorage.getItem(key)) {
         var value = localStorage.getItem(key);
+        if (Sign.DEBUG) console.log("#Sign get store:" + key + "   data:" + value);
         return JSON.parse(value);
     }
 }
@@ -91,9 +96,9 @@ Sign.mark = function (name, func, dom, onPop) {
         Sign.set('sign-' + name, Sign.cb[id][name].toString());
     }
     target.addEventListener(name, Sign.cb[id][name], onPop);
+    if (Sign.DEBUG) console.log("#Sign Mark a sign name:" + name + "   on node:" + id + "   on bubbling trigger:" + !onPop);
     return true
 }
-
 /**
  * 触发：触发标记
  * @name 事件名
@@ -103,6 +108,8 @@ Sign.mark = function (name, func, dom, onPop) {
  */
 Sign.trigger = function (name, params, dom) {
     var signs = Sign.get('signs') || {};
+    Sign.cb[0] = Sign.cb[0] || {};
+    Sign.lib[0] = Sign.lib[0] || {};
     if (signs[name] && !Sign.lib[0][name]) {
         var scb = Sign.get('sign-' + name);
         Sign.cb[0][name] = eval('(' + scb + ')');
@@ -127,11 +134,14 @@ Sign.trigger = function (name, params, dom) {
                 }
             }
         }
+        if (Sign.DEBUG) console.log("#Sign Triggers sign:" + name + "    params and returns:", params, rets);
         return rets
     }
     var target = dom || document
     e.id = target.id
-    return target.dispatchEvent(e);
+    var ret = target.dispatchEvent(e);
+    if (Sign.DEBUG) console.log("#Sign Trigger a sign name:" + name + "   on node:" + e.id + "   params and function return:", params, ret);
+    return ret
 }
 
 /**
@@ -143,7 +153,7 @@ Sign.trigger = function (name, params, dom) {
 Sign.remove = function (name, dom) {
     var target = dom || document
     if (dom === true || Sign.getDomId(target) === 0) {
-        if (name) {
+        if(name) {
             if (Sign.get('signs') && Sign.get('signs')[name]) {
                 var ss = Sign.get('signs');
                 ss[name] = undefined;
@@ -165,6 +175,7 @@ Sign.remove = function (name, dom) {
                 Sign.cb[id][name] = undefined
             }
         }
+        if (Sign.DEBUG) console.log("#Sign remove all node signs with sign name:" + name);
         return true
     }
     var id = Sign.getDomId(target)
@@ -173,6 +184,7 @@ Sign.remove = function (name, dom) {
             target.removeEventListener(name, Sign.lib[id][name].f, Sign.lib[id][name].t);
             Sign.lib[id][name] = undefined;
             Sign.cb[id][name] = undefined;
+            if (Sign.DEBUG) console.log("#Sign remove a sign:" + name + "    id:" + id);
             return true
         } else {
             for (const key in Sign.lib[id]) {
@@ -183,8 +195,10 @@ Sign.remove = function (name, dom) {
                 Sign.lib[id] = {};
                 Sign.cb[id] = {};
             }
+            if (Sign.DEBUG) console.log("#Sign remove all signs, node id:" + id);
             return true
         }
     }
+    if (Sign.DEBUG) console.log("#Sign remove fails not fond sign!");
     return false
 }
