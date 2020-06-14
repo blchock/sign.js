@@ -1,0 +1,45 @@
+<html>
+<head>
+  <script src="pako.min.js"></script>
+</head>
+<body>
+  <h1>Gzip string with Pako</h1>
+  <textarea id="input" rows="5" cols="30" placeholder="请输入.."></textarea>
+  <br />
+  <br />
+  <button onclick="pakoThis()">GZip压缩</button> <button onclick="pakoFrom()">GZip解压缩</button>
+  <br />
+  <br />
+  <textarea id="output" rows="5" cols="30"></textarea>
+
+  <script>
+    function unzip(b64Data){
+      var strData = atob(b64Data);
+      // Convert binary string to character-number array
+      var charData  = strData.split('').map(function(x){return x.charCodeAt(0);});
+      // Turn number array into byte-array
+      var binData = new Uint8Array(charData);
+      // // unzip
+      var data = pako.inflate(binData);
+      // Convert gunzipped byteArray back to ascii string:
+      strData = String.fromCharCode.apply(null, new Uint16Array(data));
+      return strData;
+    }
+    function zip(str){
+      var binaryString = pako.gzip(str, { to: 'string' });
+      return btoa(binaryString);
+    }
+    function pakoThis() {
+      let val = zip(document.getElementById('input').value);
+      console.log("ZIP:",val);
+      document.getElementById('output').value = val;
+    }
+    function pakoFrom() {
+      let val = unzip(document.getElementById('input').value);
+      console.log("UNZIP:",val);
+      document.getElementById('output').value = val;
+    }
+  </script>
+</body>
+
+</html>
