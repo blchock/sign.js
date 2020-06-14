@@ -2,6 +2,7 @@
 
 <head>
   <script src="sign-dev.js"></script>
+  <script src="tool/sign-ext.js"></script>
 </head>
 
 <body>
@@ -25,6 +26,7 @@
   <b onclick="window.history.go(-1);">
     [ back home ]
   </b>
+  <br /><br /><br />
 
   <script>
     Sign.DEBUG = true // open debug show log
@@ -33,6 +35,7 @@
     if (bill) {
       document.getElementById('b-content').innerHTML = bill.say + ". My name is " + bill.name + " and I`m " + bill.age + " years old.";
     }
+    document.write(Sign.formatDate(new Date(),"yyyy-MM-dd"));
   </script>
 </body>
 
