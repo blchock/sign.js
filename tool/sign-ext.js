@@ -25,7 +25,6 @@ Sign.formatDate = function (date, fmt) {
 Sign.cTrim = function (sInputString, type) {
     var sTmpStr = ' ';
     var i = -1;
-
     if (type == 0 || type == 1) {
         while (sTmpStr == ' ') {
             ++i;
@@ -33,7 +32,6 @@ Sign.cTrim = function (sInputString, type) {
         }
         sInputString = sInputString.substring(i);
     }
-
     if (type == 0 || type == 2) {
         sTmpStr = ' ';
         i = sInputString.length;
@@ -172,15 +170,18 @@ Sign.RegExp = {
     },
     idCardMask(idCard = '') {
         return idCard.substr(0, 1) + idCard.slice(1, -4).replace(/\d/g, '*') + idCard.substr(-4)
+    },
+    stringMask(str,start,end) {
+        return str.substr(0, start) + str.slice(start, end).replace(/\d/g, '*') + str.substr(end)
     }
 }
 
-// 微信环境、小程序环境检测
 // 微信环境
 Sign.isWeiXinWeb = function () {
     return navigator.userAgent.toLowerCase().indexOf('micromessenger') != -1
 }
 // 小程序环境
+// isWechatApplet().then(isWechatApp => {}).catch(notInWxapp => {})
 Sign.isWechatApplet = function () {
     const ua = window.navigator.userAgent.toLowerCase()
     return new Promise(resolve => {
@@ -199,14 +200,6 @@ Sign.isWechatApplet = function () {
         }
     })
 }
-// 使用说明
-let isWx = isWeiXinWeb
-let isWechatApp = false
-isWechatApplet().then(res => {
-    isWechatApp = res
-}).catch(res => {
-    isWechatApp = false
-})
 
 // 数组方法
 // 数组最大值
@@ -239,12 +232,8 @@ Sign.arrayUnique = function (arr) {
 // js操作页面，滚动到具体位置
 // 简单的方法 参数一是时间，参数二是距离，但是有些机型，并不能兼容这个方法
 // window.scrollTo(10, 200)
-// 模拟滚动  参数一是距离，参数二是时间 
-/*
-    将页面滚动到某个元素
-    let ele = document.getElementById('scrollId')
-    this.scrollTop(ele.offsetTop, 200)
-*/
+// 模拟滚动  参数一是距离，参数二是时间
+// 将页面滚动到某个元素 Sign.scrollTop(document.getElementById('scrollId').offsetTop, 200)
 Sign.scrollTop = function (number = 0, time) {
     if (!time) {
         document.body.scrollTop = document.documentElement.scrollTop = number

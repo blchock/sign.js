@@ -73,3 +73,37 @@ Sign.remove()
 Sign.del('sign-');   // 删除所有包含sign-的数据
 Sign.guid(); // 生成guid
 ```
+
+## Sign-Extend
+提供了多个扩展Sign的工具函数包
+
+### 时间类
+* Sign.formatDate(时间,格式) 日期格式化 y年M月d日h时m分s秒
+### 字符类
+* Sign.cTrim(字符串, type) 去除空格 type 0：去除全部空格，1：去除左边空格，2：去除右边空格
+### 地址类
+* Sign.getQueryString(参数名) URL中取参数  返回参数值
+### Cookie类
+* Sign.getCookie(键名) 获取cookie
+* Sign.setCookie(键名, 键值, 过期时间(小时)) 设置cookie
+* Sign.delCookie(键名) 删除cookie
+### 移动端类
+* Sign.getDeviceType() 获取设备号，安卓，ios，web
+* Sign.isWeiXinWeb() 是否微信环境
+* Sign.isWechatApplet() 是否小程序环境 isWechatApplet().then(isWechatApp => {}).catch(notInWxapp => {})
+### 表单验证类
+* Sign.RegExp.checkMobile(字符串) 验证手机号
+* Sign.RegExp.checkNomalName(字符串) 验证姓名存在两个汉字
+* Sign.RegExp.isEmail(字符串) 验证邮箱
+* Sign.RegExp.checkIdCard(字符串) 验证身份证
+* Sign.RegExp.idCardMask(字符串) 隐藏身份证
+* Sign.RegExp.stringMask(字符串,起始下标,结束下标) 隐藏字符串中一段字符为*
+### 数组类
+* Sign.arrayMax([arr]) 取数组最大值
+* Sign.arrayMin([arr]) 取数组最小值
+* Sign.arrayUnion([a],[b]) 返回数组并集
+* Sign.arrayIntersect([a],[b]) 返回数组交集
+* Sign.arrayDiff([a],[b]) 返回数组差集
+* Sign.arrayUnique([arr]) 数组去重
+### Dom类
+* Sign.scrollTop(位置,时间(毫秒)) 滚动到某位置 Sign.scrollTop(document.getElementById('scrollId').offsetTop, 200)
