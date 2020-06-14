@@ -76,7 +76,8 @@ Sign.guid(); // 生成guid
 
 ## Sign-Extend
 提供了多个扩展Sign的函数工具
-** 加载有先后顺序，可以单独加载扩展工具包，但如果两个都要使用，请先加载sign.js/sign.min.js **
+
+> 加载有先后顺序，可以单独加载扩展工具包，但如果两个都要使用，请先加载 sign.js/sign.min.js 再加载 sign-ext.js/sign-ext.min.js
 
 ### 时间类
 * Sign.formatDate(时间,格式) 日期格式化 y年M月d日h时m分s秒
