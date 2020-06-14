@@ -2,7 +2,7 @@
 
 <head>
   <script src="sign-dev.js"></script>
-  <script src="tool/sign-ext.min.js"></script>
+  <script src="sign-ext.min.js"></script>
 </head>
 
 <body>
@@ -26,6 +26,9 @@
   <b onclick="window.history.go(-1);">
     [ back home ]
   </b>
+  <b onclick="Sign.addFavorite(location.href,'Sign 标记事件管理器')">
+     [ add favor ]
+  </b>
   <br /><br /><br />
 
   <script>
@@ -36,6 +39,12 @@
       document.getElementById('b-content').innerHTML = bill.say + ". My name is " + bill.name + " and I`m " + bill.age + " years old.";
     }
     document.write(Sign.formatDate(new Date(),"yyyy-MM-dd"));
+    document.write('<br/><br/>');
+    document.write('$' + Sign.toThousands(18265493554.2315644));
+    document.write('<br/><br/>');
+    document.write('【刻舟求剑】' + Sign.ellipsis('楚人有涉江者，其剑自舟中坠于水，遽契其舟曰：“是吾剑之所从坠。”舟止，从其所契者入水求之。舟已行矣，而剑不行，求剑若此，不亦惑乎？',100));
+    document.write('<br/><br/>');
+    document.write('窗口可见范围: ' + JSON.stringify(Sign.getViewportOffset()));
   </script>
 </body>
 

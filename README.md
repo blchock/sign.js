@@ -75,12 +75,16 @@ Sign.guid(); // 生成guid
 ```
 
 ## Sign-Extend
-提供了多个扩展Sign的工具函数包
+提供了多个扩展Sign的函数工具
 
 ### 时间类
 * Sign.formatDate(时间,格式) 日期格式化 y年M月d日h时m分s秒
+* Sign.formatTDate(timestamp,格式) 时间戳格式化 y年M月d日h时m分s秒
 ### 字符类
 * Sign.cTrim(字符串, type) 去除空格 type 0：去除全部空格，1：去除左边空格，2：去除右边空格
+* Sign.toThousands(数值) 千分位显示，常用于价格显示
+* Sign.isNumeric(值) 判断值是否是数字(或数字字符串、千分位数字会自动去除逗号)
+* Sign.ellipsis(字符串, 保留长度) 字符串超出后省略加...
 ### 地址类
 * Sign.getQueryString(参数名) URL中取参数  返回参数值
 ### Cookie类
@@ -89,10 +93,12 @@ Sign.guid(); // 生成guid
 * Sign.delCookie(键名) 删除cookie
 ### 移动端类
 * Sign.getDeviceType() 获取设备号，安卓，ios，web
+* Sign.isMobile() 判断是否移动设备访问
 * Sign.isWeiXinWeb() 是否微信环境
 * Sign.isWechatApplet() 是否小程序环境 isWechatApplet().then(isWechatApp => {}).catch(notInWxapp => {})
 ### 表单验证类
 * Sign.RegExp.checkMobile(字符串) 验证手机号
+* Sign.RegExp.checkTell(字符串) 验证国内电话
 * Sign.RegExp.checkNomalName(字符串) 验证姓名存在两个汉字
 * Sign.RegExp.isEmail(字符串) 验证邮箱
 * Sign.RegExp.checkIdCard(字符串) 验证身份证
@@ -107,3 +113,12 @@ Sign.guid(); // 生成guid
 * Sign.arrayUnique([arr]) 数组去重
 ### Dom类
 * Sign.scrollTop(位置,时间(毫秒)) 滚动到某位置 Sign.scrollTop(document.getElementById('scrollId').offsetTop, 200)
+* Sign.addFavorite(地址,标题) 加入收藏夹
+* Sign.setHomepage(地址) 设为首页
+* Sign.getPageHeight() 获取页面高度
+* Sign.getPageWidth() 获取页面宽度
+* Sign.getPageScrollLeft() 获取页面scrollLeft
+* Sign.getScrollOffset() 获取页面滚动距离
+* Sign.getViewportOffset() 获取窗体可见范围的宽与高
+* Sign.getElmentPosition(el) 返回一个元素在文档中的坐标
+* Sign.getStyle(el,prop) 获取样式属性(返回的属性值都是计算过的，不存在相对单位,只读)

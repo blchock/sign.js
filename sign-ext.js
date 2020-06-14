@@ -1,5 +1,8 @@
 var Sign = Sign || {}
 
+
+////////////////////////////////////// 时间 //////////////////////////////////////
+
 // 日期格式化
 Sign.formatDate = function (date, fmt) {
     if (/(y+)/.test(fmt)) {
@@ -20,6 +23,33 @@ Sign.formatDate = function (date, fmt) {
     }
     return fmt
 }
+
+// 时间戳转为格式化时间
+Sign.formatTDate = function (timestamp, formats) {
+    var formatDigit = function (n) {
+        return n.toString().replace(/^(\d)$/, '0$1');
+    };
+    formats = formats || 'Y-M-D';
+    var myDate = timestamp ? new Date(timestamp) : new Date();
+    var year = myDate.getFullYear();
+    var month = formatDigit(myDate.getMonth() + 1);
+    var day = formatDigit(myDate.getDate());
+    var hour = formatDigit(myDate.getHours());
+    var minute = formatDigit(myDate.getMinutes());
+    var second = formatDigit(myDate.getSeconds());
+    return formats.replace(/y|M|d|h|m|s/g, function (matches) {
+        return ({
+            y: year,
+            M: month,
+            d: day,
+            h: hour,
+            m: minute,
+            s: second
+        })[matches];
+    });
+}
+
+////////////////////////////////////// 字符串 //////////////////////////////////////
 
 // 去除空格 type   0：去除全部空格，1：去除左边空格，2：去除右边空格
 Sign.cTrim = function (sInputString, type) {
@@ -44,6 +74,42 @@ Sign.cTrim = function (sInputString, type) {
     return sInputString;
 }
 
+// 千分位显示，常用于价格显示
+Sign.toThousands = function (num) {
+    return parseFloat(num).toFixed(2).replace(/(\d{1,3})(?=(\d{3})+(?:\.))/g, "$1,");
+}
+
+// 判断是否数字
+Sign.isNumeric = function (txt) {
+    if (txt == "") {
+        return false;
+    }
+    if (txt.indexOf(",") > 0) {
+        txt = txt.replace(",", "");
+    }
+    if (isNaN(txt)) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
+
+// 字符串超出后省略加...
+Sign.ellipsis = function (restr, len) {
+    var wlength = restr.replace(/[^\x00-\xff]/g, "**").length;
+    if (wlength > len) {
+        for (var k = len / 2; k < restr.length; k++) {
+            if (restr.substr(0, k).replace(/[^\x00-\xff]/g, "**").length >= len) {
+                return restr.substr(0, k) + "...";
+            }
+        }
+    }
+    return restr
+}
+
+////////////////////////////////////// 浏览器存储 //////////////////////////////////////
+
 // url中取参数
 Sign.getQueryString = function (name) {
     if (undefined == window.location) return null
@@ -55,16 +121,6 @@ Sign.getQueryString = function (name) {
         return null
     }
 }
-
-// // 获取、设置、删除cookie值
-// Sign.getCookie = function (e) {
-//     var i = document.cookie.match(new RegExp('(^| )' + e + '=([^;]*)(;|$)'))
-//     if (i !== null) {
-//         return i[2]
-//     } else {
-//         return ''
-//     }
-// }
 // 获取cookie第二种方法
 Sign.getCookie = function (name = '') {
     if (document.cookie.length > 0) {
@@ -93,22 +149,9 @@ Sign.delCookie = function (name = '') {
         document.cookie = name + '=' + escape(value) + ';expires=' + exDate.toGMTString()
     }
 }
-// 获取设备号，安卓，ios，web
-Sign.getDeviceType = function () {
-    var deviceType = 'WEB' //其他
-    var u = navigator.userAgent
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1
-    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
-    if (isAndroid) {
-        deviceType = 'ANDROID'
-    } else if (isiOS) {
-        deviceType = 'IOS'
-    }
-    return deviceType
-}
 
+////////////////////////////////////// 表单验证相关 //////////////////////////////////////
 
-// 表单验证相关
 Sign.RegExp = {
     // 检测手机号
     checkMobile(s) {
@@ -118,6 +161,12 @@ Sign.RegExp = {
         } else {
             return false
         }
+    },
+    // 匹配国内电话号码（0511-4405222 或 021-87888822) //////// 
+    checkTell(str) {
+        var result = str.match(/\d{3}-\d{8}|\d{4}-\d{7}/);
+        if (result == null) return false;
+        return true;
     },
     // 检测姓名 必须要有两个汉字
     checkNomalName(s) {
@@ -171,11 +220,30 @@ Sign.RegExp = {
     idCardMask(idCard = '') {
         return idCard.substr(0, 1) + idCard.slice(1, -4).replace(/\d/g, '*') + idCard.substr(-4)
     },
-    stringMask(str,start,end) {
+    stringMask(str, start, end) {
         return str.substr(0, start) + str.slice(start, end).replace(/\d/g, '*') + str.substr(end)
     }
 }
 
+////////////////////////////////////// 移动端 //////////////////////////////////////
+
+// 获取设备号，安卓，ios，web
+Sign.getDeviceType = function () {
+    var deviceType = 'WEB' //其他
+    var u = navigator.userAgent
+    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Adr') > -1
+    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+    if (isAndroid) {
+        deviceType = 'ANDROID'
+    } else if (isiOS) {
+        deviceType = 'IOS'
+    }
+    return deviceType
+}
+// 判断是否移动设备访问
+Sign.isMobile = function () {
+    return (/iphone|ipod|android.*mobile|windows.*phone|blackberry.*mobile/i.test(window.navigator.userAgent.toLowerCase()));
+}
 // 微信环境
 Sign.isWeiXinWeb = function () {
     return navigator.userAgent.toLowerCase().indexOf('micromessenger') != -1
@@ -201,7 +269,8 @@ Sign.isWechatApplet = function () {
     })
 }
 
-// 数组方法
+////////////////////////////////////// 数组方法 //////////////////////////////////////
+
 // 数组最大值
 Sign.arrayMax = function (arr) {
     return Math.max.apply(null, arr)
@@ -229,6 +298,8 @@ Sign.arrayUnique = function (arr) {
     return [...new Set([...arr])]
 }
 
+////////////////////////////////////// dom //////////////////////////////////////
+
 // js操作页面，滚动到具体位置
 // 简单的方法 参数一是时间，参数二是距离，但是有些机型，并不能兼容这个方法
 // window.scrollTo(10, 200)
@@ -251,4 +322,100 @@ Sign.scrollTop = function (number = 0, time) {
             clearInterval(scrollTimer)
         }
     }, spacingTime)
+}
+// 加入收藏夹
+Sign.addFavorite = function (sURL, sTitle) {
+    try {
+        window.external.addFavorite(sURL, sTitle)
+    } catch (e) {
+        try {
+            window.sidebar.addPanel(sTitle, sURL, "")
+        } catch (e) {
+            alert("加入收藏失败，请使用Ctrl+D进行添加")
+        }
+    }
+}
+// 设为首页
+Sign.setHomepage = function (homeurl) {
+    if (document.all) {
+        document.body.style.behavior = 'url(#default#homepage)';
+        document.body.setHomePage(homeurl)
+    } else if (window.sidebar) {
+        if (window.netscape) {
+            try {
+                netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect")
+            } catch (e) {
+                alert("该操作被浏览器拒绝，如果想启用该功能，请在地址栏内输入about:config,然后将项 signed.applets.codebase_principal_support 值该为true");
+            }
+        }
+        var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+        prefs.setCharPref('browser.startup.homepage', homeurl)
+    }
+}
+// 获取页面高度
+Sign.getPageHeight = function () {
+    var g = document, a = g.body, f = g.documentElement, d = g.compatMode == "BackCompat" ? a : g.documentElement;
+    return Math.max(f.scrollHeight, a.scrollHeight, d.clientHeight);
+}
+// 获取页面宽度
+Sign.getPageWidth = function () {
+    var g = document, a = g.body, f = g.documentElement, d = g.compatMode == "BackCompat" ? a : g.documentElement;
+    return Math.max(f.scrollWidth, a.scrollWidth, d.clientWidth);
+}
+// 获取页面scrollLeft
+Sign.getPageScrollLeft = function () {
+    var a = document;
+    return a.documentElement.scrollLeft || a.body.scrollLeft;
+}
+// 获取页面滚动距离
+Sign.getScrollOffset = function () {
+    if (window.pageXOffset) {
+        return {
+            x: window.pageXOffset,
+            y: window.pageYOffset
+        }
+    } else {//IE8及以下
+        return {
+            x: document.body.scrollLeft + document.documentElement.scrollLeft,
+            y: document.body.scrollTop + document.documentElement.scrollTop
+        }
+    }
+}
+// 获取窗体可见范围的宽与高
+Sign.getViewportOffset = function () {
+    if (window.innerWidth) {
+        return {
+            x: window.innerWidth,
+            y: window.innerHeight
+        }
+    } else {//IE8及以下
+        if (document.compatMode == "BackCompat") {//如果是怪异模式、混杂模式
+            return {
+                x: document.body.clientWidth,
+                y: document.body.clientHeight
+            }
+        } else {
+            return {
+                x: document.documentElement.clientWidth,//标准模式
+                y: document.documentElement.clientHeight
+            }
+        }
+    }
+}
+// 返回一个元素在文档中的坐标
+Sign.getElmentPosition = function (el) {
+    if (el.offsetParent == body) {
+        return {
+            x: el.offsetLeft,
+            y: el.offsetTop
+        }
+    }
+}
+// 获取样式属性
+Sign.getStyle = function (elem, prop) {
+    if (window.getcomputedStyle) {
+        return window.getComputedStyle(elem, null)[prop];
+    } else {
+        return elem.currentStyle[prop];
+    }
 }
