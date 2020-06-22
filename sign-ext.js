@@ -269,6 +269,33 @@ Sign.isWechatApplet = function () {
     })
 }
 
+/**
+ * 跨页面存储对象(小程序版)
+ * @key 键
+ * @value 值(不传则为删除)
+ */
+Sign.set = function (key, value) {
+    if (value === undefined) wx.removeStorageSync(key);
+    else wx.setStorageSync(key, JSON.stringify(value));
+}
+
+/**
+ * 跨页面获取对象(小程序版)
+ * @key 键
+ */
+Sign.get = function (key) {
+    var value = wx.getStorageSync(key);
+    if (value) return JSON.parse(value);
+}
+
+/**
+ * 删除存储对象(小程序版)
+ * @keyword 关键字
+ */
+Sign.del = function (keyword) {
+    if (keyword) wx.getStorageInfoSync().keys.forEach(item => item.indexOf(keyword) != -1 ? wx.removeStorageSync(item) : '');
+}
+
 ////////////////////////////////////// 数组方法 //////////////////////////////////////
 
 // 数组最大值

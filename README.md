@@ -25,17 +25,17 @@
  * @dom 事件绑定节点（默认为全局）(true代表删除所有该事件名绑定过的节点上的该事件)
  * @return 是否删除成功（删除失败表示该节点下没有该事件）
 
- ### set 跨页面存储对象
+ ### setData 跨页面存储对象
  * 跨页面存储对象：使用localStorage存储技术持久化数据，存储方式为键值对
  * @key 键（键名为string类型）
  * @value 值（值内容可以为任意类型，支持对象，不传则为删除）值将会执行JSON.stringify转换为json存储
 
-### get 跨页面获取对象
+### getData 跨页面获取对象
 * 跨页面获取对象（会执行JSON.parse解析值）
 * @key 键（键名为string类型）
 
-### del 删除存储对象
-* 删除存储对象：依据传入的关键字批量删除指定特征的存储对象，如果只删除单个存储对象，建议调用Sign.set(key)方式删除
+### delData 删除存储对象
+* 删除存储对象：依据传入的关键字批量删除指定特征的存储对象，如果只删除单个存储对象，建议调用Sign.setData(key)方式删除
  * @keyword 关键字
 
 ## 示例
@@ -60,14 +60,14 @@ Sign.trigger('msg',{data:'foooooooooobar!'}, true);
 Sign.remove('msg', document.getElementById('b-content'));
 Sign.remove('msg', true);
 
-Sign.set('Bill', {name:'Bill',age:27,say:'Hello! World'})
-document.getElementById('a-content').innerHTML = "Signs: " + JSON.stringify(Sign.get('signs'));
-var bill = Sign.get('Bill');
+Sign.setData('Bill', {name:'Bill',age:27,say:'Hello! World'})
+document.getElementById('a-content').innerHTML = "Signs: " + JSON.stringify(Sign.getData('signs'));
+var bill = Sign.getData('Bill');
 if (bill) {
 	document.getElementById('b-content').innerHTML = bill.say + ". My name is " + bill.name + " and I`m " + bill.age + " years old.";
 }
 
-Sign.set('Bill')
+Sign.setData('Bill')
 Sign.remove('msgAno')
 Sign.remove()
 Sign.del('sign-');   // 删除所有包含sign-的数据
@@ -98,6 +98,7 @@ Sign.guid(); // 生成guid
 * Sign.isMobile() 判断是否移动设备访问
 * Sign.isWeiXinWeb() 是否微信环境
 * Sign.isWechatApplet() 是否小程序环境 isWechatApplet().then(isWechatApp => {}).catch(notInWxapp => {})
+* Sign.set()/Sign.get()/Sign.del() 分别对应于setData,getData,delData的小程序版本
 ### 表单验证类
 * Sign.RegExp.checkMobile(字符串) 验证手机号
 * Sign.RegExp.checkTell(字符串) 验证国内电话

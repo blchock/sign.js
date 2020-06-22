@@ -42,7 +42,7 @@ Sign.getDom = function (id) {
  * @key 键
  * @value 值(不传则为删除)
  */
-Sign.set = function (key, value) {
+Sign.setData = function (key, value) {
     if (value === undefined) localStorage.removeItem(key);
     else localStorage.setItem(key, JSON.stringify(value));
 }
@@ -51,7 +51,7 @@ Sign.set = function (key, value) {
  * 跨页面获取对象
  * @key 键
  */
-Sign.get = function (key) {
+Sign.getData = function (key) {
     if (localStorage.getItem(key)) {
         var value = localStorage.getItem(key);
         return JSON.parse(value);
@@ -62,7 +62,7 @@ Sign.get = function (key) {
  * 删除存储对象
  * @keyword 关键字
  */
-Sign.del = function (keyword) {
+Sign.delData = function (keyword) {
     if (keyword) {
         Object.keys(localStorage).forEach(item => item.indexOf(keyword) != -1 ? localStorage.removeItem(item) : '');
     }
@@ -85,10 +85,10 @@ Sign.mark = function (name, func, dom, onPop) {
     Sign.cb[id][name] = func;
     Sign.lib[id][name] = { t: !!onPop }
     if (id === 0) {
-        var signs = Sign.get('signs') || {};
+        var signs = Sign.getData('signs') || {};
         signs[name] = Sign.lib[id][name];
-        Sign.set('signs', signs);
-        Sign.set('sign-' + name, Sign.cb[id][name].toString());
+        Sign.setData('signs', signs);
+        Sign.setData('sign-' + name, Sign.cb[id][name].toString());
     }
     target.addEventListener(name, Sign.cb[id][name], onPop);
     return true
@@ -102,9 +102,9 @@ Sign.mark = function (name, func, dom, onPop) {
  * @return 返回事件回调函数返回的内容，触发所有节点时会返回带 节点id和ret返回内容 的数组
  */
 Sign.trigger = function (name, params, dom) {
-    var signs = Sign.get('signs') || {};
+    var signs = Sign.getData('signs') || {};
     if (signs[name] && !Sign.lib[0][name]) {
-        var scb = Sign.get('sign-' + name);
+        var scb = Sign.getData('sign-' + name);
         Sign.cb[0][name] = eval('(' + scb + ')');
         Sign.lib[0][name] = signs[name];
         document.addEventListener(name, Sign.cb[0][name], Sign.lib[0][name].t);
@@ -144,15 +144,15 @@ Sign.remove = function (name, dom) {
     var target = dom || document
     if (dom === true || Sign.getDomId(target) === 0) {
         if (name) {
-            if (Sign.get('signs') && Sign.get('signs')[name]) {
-                var ss = Sign.get('signs');
+            if (Sign.getData('signs') && Sign.getData('signs')[name]) {
+                var ss = Sign.getData('signs');
                 ss[name] = undefined;
-                Sign.set('signs', ss);
-                Sign.set('sign-' + name);
+                Sign.setData('signs', ss);
+                Sign.setData('sign-' + name);
             }
         } else {
-            Sign.set('signs');
-            Sign.del('sign-');
+            Sign.setData('signs');
+            Sign.delData('sign-');
         }
     }
     if (dom === true) {

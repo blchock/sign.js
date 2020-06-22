@@ -10,7 +10,7 @@
   <ul>
     <li><a onclick="Sign.trigger('msg',{data:'global trigger this.'})">trigger "msg" to global: data=global trigger  this.</a></li>
     <li><a onclick="Sign.trigger('msgAno',{data:'msgAno!'}, true)">trigger "msgAno" to all: data=msgAno!</a></li>
-    <li><a onclick="Sign.set('Bill')">Remove Bill</a></li>
+    <li><a onclick="Sign.setData('Bill')">Remove Bill</a></li>
     <li><a onclick="Sign.remove('msg', true)">remove Sign "msg" on all content</a></li>
     <li><a onclick="Sign.remove('msgAno')">remove Sign "msgAno" on global.</a></li>
     <li><a onclick="Sign.remove()">remove all Sign.</a></li>
@@ -33,8 +33,8 @@
 
   <script>
     Sign.DEBUG = true // open debug show log
-    document.getElementById('a-content').innerHTML = "Signs: " + JSON.stringify(Sign.get('signs'));
-    var bill = Sign.get('Bill');
+    document.getElementById('a-content').innerHTML = "Signs: " + JSON.stringify(Sign.getData('signs'));
+    var bill = Sign.getData('Bill');
     if (bill) {
       document.getElementById('b-content').innerHTML = bill.say + ". My name is " + bill.name + " and I`m " + bill.age + " years old.";
     }
