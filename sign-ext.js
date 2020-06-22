@@ -248,6 +248,7 @@ Sign.isMobile = function () {
 Sign.isWeiXinWeb = function () {
     return navigator.userAgent.toLowerCase().indexOf('micromessenger') != -1
 }
+var ON_WEIXIN = Sign.isWeiXinWeb()
 // 小程序环境
 // isWechatApplet().then(isWechatApp => {}).catch(notInWxapp => {})
 Sign.isWechatApplet = function () {
@@ -275,8 +276,13 @@ Sign.isWechatApplet = function () {
  * @value 值(不传则为删除)
  */
 Sign.set = function (key, value) {
-    if (value === undefined) wx.removeStorageSync(key);
-    else wx.setStorageSync(key, JSON.stringify(value));
+    if (ON_WEIXIN) {
+        if (value === undefined) wx.removeStorageSync(key);
+        else wx.setStorageSync(key, JSON.stringify(value));
+    } else {
+        if (value === undefined) localStorage.removeItem(key);
+        else localStorage.setItem(key, JSON.stringify(value));
+    }
 }
 
 /**
@@ -284,8 +290,13 @@ Sign.set = function (key, value) {
  * @key 键
  */
 Sign.get = function (key) {
-    var value = wx.getStorageSync(key);
-    if (value) return JSON.parse(value);
+    if (ON_WEIXIN) {
+        var value = wx.getStorageSync(key);
+        if (value) return JSON.parse(value);
+    } else {
+        var value = localStorage.getItem(key);
+        if (value) return JSON.parse(value);
+    }
 }
 
 /**
@@ -293,7 +304,11 @@ Sign.get = function (key) {
  * @keyword 关键字
  */
 Sign.del = function (keyword) {
-    if (keyword) wx.getStorageInfoSync().keys.forEach(item => item.indexOf(keyword) != -1 ? wx.removeStorageSync(item) : '');
+    if (ON_WEIXIN) {
+        if (keyword) wx.getStorageInfoSync().keys.forEach(item => item.indexOf(keyword) != -1 ? wx.removeStorageSync(item) : '');
+    } else {
+        if (keyword) Object.keys(localStorage).forEach(item => item.indexOf(keyword) != -1 ? localStorage.removeItem(item) : '');
+    }
 }
 
 ////////////////////////////////////// 数组方法 //////////////////////////////////////

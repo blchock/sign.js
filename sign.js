@@ -52,10 +52,8 @@ Sign.setData = function (key, value) {
  * @key 键
  */
 Sign.getData = function (key) {
-    if (localStorage.getItem(key)) {
-        var value = localStorage.getItem(key);
-        return JSON.parse(value);
-    }
+    var value = localStorage.getItem(key);
+    if (value) return JSON.parse(value);
 }
 
 /**
@@ -63,9 +61,7 @@ Sign.getData = function (key) {
  * @keyword 关键字
  */
 Sign.delData = function (keyword) {
-    if (keyword) {
-        Object.keys(localStorage).forEach(item => item.indexOf(keyword) != -1 ? localStorage.removeItem(item) : '');
-    }
+    if (keyword) Object.keys(localStorage).forEach(item => item.indexOf(keyword) != -1 ? localStorage.removeItem(item) : '');
 }
 
 /**
